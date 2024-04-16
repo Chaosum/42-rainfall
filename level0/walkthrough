@@ -1,0 +1,11 @@
+On se connecte sur la vm, avec le nom d'utilisateur level0, mdp level0. 
+On voit un exécutable level0. Si on le met dans un décompilateur, on obtient
+rien car le fichier est trop gros. 
+Si on lance l'exécutable sans arguments, on obtient un segfault. Si on le lance
+avec au moins un argument, on obtient la chaîne "No !". Les arguments sont lus. 
+On peut le décompiler avec gdb. On fait un break dans main, et on constate que
+le programme fait un atoi sur argv[1], puis compare le résultat à 0x1a7, c-à-d
+423. 
+Si on lance ./level0 423, on obtient un terminal. On y fait whoami, et on
+constate qu'on est level1. On fait cat /home/user/level1/.pass, et on obtient 
+le flag. 

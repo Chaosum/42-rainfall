@@ -1,0 +1,12 @@
+On voit un fichier level1 dans le répertoir maison. On exécute le programme, et
+il attend qu'on rentre du texte. Une fois le texte rentré, le programme s'arrête. 
+On décompile le programme, et on voit qu'il fait un gets sur une variable locale. 
+C'est un endroit idéal pour un buffer overflow. On décompile le programme, on
+trouve une fonction run qui exécute un shell. On trouve avec un outil en ligne
+un offset de 76 pour l'addresse de retour. On trouve l'adresse de la fonction
+run avec objdump -d level1. On met cette adresse de retour dans la string qu'on
+va donner au programme. Au final, on construit la string comme suit :
+python -c 'print "\x90"*76 + "\x44\x84\x04\x08" > /tmp/level1
+Ensuite, on lance le programme comme suit :
+cat /tmp/level1 - | ./level1
+On a là un shell, qui nous permet de récupérer le flag. 

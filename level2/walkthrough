@@ -1,0 +1,20 @@
+On fait à peu près les mêmes constatations sur l'exécutable du homedir que pour
+l'exercice précédent. On doit faire un buffer overflow, mais cette fois-ci il
+n'y a pas de fonction qui fait ce qu'on veut, donc on doit injecter notre
+propre code. Un tel code s'appelle un shellcode, on peut en trouver sur
+internet. Avec la même méthode qu'avant, on trouve un offset de 80. 
+Le shellcode que nous avons choisi fait 30 octets, donc nous ne mettrons que
+50 nop. 
+Un difficulté supplémentaire se présente : le programme vérifie juste après le
+gets que l'adresse de retour stockée sur la stack ne pointe pas vers la stack. 
+Donc on ne peut mettre comme adresse de retour un pointer vers le buffer 
+utilisé par gets. On voit dans le code un strdup un peu après la vérification. 
+Ce strdup copie la string qu'on lui a donné, et rend l'adresse du buffer alloué
+dans la heap. Cette adresse est la même à chaque execution. On peut donc la 
+récupérer avec gdb. On utilise cette adresse dans notre chaîne de charactère
+d'attaque. 
+On fait donc : 
+python -c 'print "\x31\xc0\x31\xdb\x31\xc9\x31\xd2\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x50\x89\xe2\x89\xe1\xb0\x0b\xcd\x80" + "\x90"*50 + "\x08\xa0\x04\x08"' > /tmp/test4
+cat /tmp/test4 - | ./level2
+
+À partir de là, on peut récupérer le flag comme précédemment. 
