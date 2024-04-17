@@ -1,0 +1,16 @@
+il s'agit encore d'un buffer overflow 
+
+mais cette fois ci on a pas de chiffre hardcode a mettre dans une variable
+
+on a pas non plus de valeur de retour car le main appelle exit
+exit est une fonction externe que l'on appelle grace a la plt
+
+il suffit donc de modifier une entree dans la plt pour que exit apelle la fonction que l'on veut plutot que de quitter le programme
+
+on constate dans le code asm qu'il y a un wrapper pour appeller les fonctions externe et qu'une reference a une adresse est appelee
+
+l'entree de la plt que l'on veut modifier est a l'adresse 0x8049838 et on veux y mettre 80484A4 en utilisant la faille de printf %n
+
+on doit donc print 134513828 char donc on a besoin de %c
+
+python -c 'print("\x38\x98\x04\x08%134513824c%4$n")' > test2 && cat test2 - | ./level5
