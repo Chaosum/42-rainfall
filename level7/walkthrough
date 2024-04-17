@@ -1,0 +1,17 @@
+En décompilant le programme, on voit qu'il y a une fonction m qui n'est pas 
+utilisée, et qui print c, qui est un buffer contenant le .pass du level8. 
+La variable c est remplie dans le main. 
+Le but du jeux est d'appeler la fonction m après la lecture de c. 
+
+On voit qu'il y a 4 mallocs, qui sont organisés en deux tableaux de char*. 
+On constate que les deux premiers arguments du programme sont passés à strcpy 
+qui les met dans les char*. La faille vient du fait que strcpy ne vérifie pas 
+la taille de string passée en argument (ici argv[1] et argv[2]). Cela nous 
+permet de faire un heap overflow. 
+Le but est de remplacer le pointeur contenu par le deuxième malloc pour qu'il 
+pointe vers l'adresse de retour contenu dans la stack, afin de le modifier. 
+Le deuxième argument contient l'adresse de m, et sera écrit à l'adresse pointée 
+précédemment. 
+On construit donc l'exploit comme suit : 
+
+./level7 $(python -c 'print "A"*20 + "\x28\x99\x04\x08"') $(python -c 'print "\xf4\x84\x04\x08"')

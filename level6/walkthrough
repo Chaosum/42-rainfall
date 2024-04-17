@@ -1,1 +1,13 @@
+On décompile le programme et on voit qu'il y a deux malloc, l'un à la suite 
+de l'autre. Avec gdb on constate que ces deux mallocs sont côte à côte dans la
+mémoire, et qu'il sont toujours alloués au même endroit. On peut affecter le 
+deuxième malloc avec le premier, car il y a un strcpy de argv[1] qui est fait 
+dessus. Le deuxième buffer malloc'é est utilisé pour effectué un appel de 
+fonction. Donc en mettant l'adresse que l'on veut dans argv[1] après une 
+payload, on peut changer le cours d'execution du programme vers une fonction
+fortuite n qui affiche le flag. 
+Avec un outil en ligne, on trouve que l'offset est de 72. Avec objdump on 
+trouve que l'adresse de la fonction fortuete est 0x08048454. On construit donc
+l'exploit comme suit :
+
 ./level6 $(python -c 'print "A"*72 + "\x54\x84\x04\x08"')
