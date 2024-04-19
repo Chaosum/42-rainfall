@@ -1,3 +1,32 @@
-./level9 $(python -c 'print("\x90" * 70 + "\x31\xc0\x31\xdb\x31\xc9\x31
-\xd2\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x50\x89\xe2\x89\xe1\xb0\x0b\xcd\x
-80"  + "\x0c\xa0\x04\x08") + "A" * 4 + "\x70\xa0\x04\x08"')
+On décompile le programme comme d'habitude, et on voit qu'il a été écrit en 
+c++. On voit qu'il y a un memcpy qui copie directement argv[1] dans une des 
+variables du programme. En cpp, il y a des vtables pour résoudre les appels de 
+fonctions virtuelles lors de l'exécution. Dans l'implémentation de la machine, 
+un pointeur vers la vtable est stocké sur les 4 premiers octets de chaque 
+objet. On constate avec gdb que les deux objets créés par le programme sont 
+côte à côte dans la mémoire, et que celui sur lequel opère memcpy est en 
+premier. Cela nous facilite la tâche pour faire un buffer overflow. 
+En examinant le code, on peut voir que chaque objet fait 108 octets de long, 
+avec un int stocké à l'offset 104 (0x68). En lisant l'assembleur, on se rend
+compte que l'appel à la fonction virtuel est résolu comme suit : on récupère le 
+*this du deuxième objet, on le déréférence 2 fois, et on exécute l'instruction 
+call sur le résultat. Il suffit donc de réécrire le premier octet du deuxième 
+objet, pour qu'il pointe sur un pointeur qui pointe vers un shellcode. 
+Avec gdb, on trouve que le premier objet est à l'adresse 0x0804a008, et le 
+deuxième à l'adresse 0x0804a078. On trouve qu'il y a une espace de 4 entre les 
+deux objets. Il faut donc remplir entièrement le premier objet, l'espace vide 
+entre les deux, puis écrire l'adresse que l'on veut. On choisit l'adresse du 
+int contenu par le deuxième objet, qui est 0x0804a008+0x68=0804a070. On met à 
+cette adresse l'adresse pointant vers le début du shellcode, avec son padding 
+que l'on choisit de mettre au début du buffer, à 0x08a008+4=0x0804a00c. On 
+obtient cette adresse grâce à gdb et au décompilateur qui nous permettent de 
+comprendre que le buffer est copié dans le premier objet, 4 octets après son 
+début. 
+Le shellcode que nous avons choisit fait 30 octets, et nous devons le faire 
+rentrer dans un espace de 100 octets, donc nous commençons par une nop slide de 
+70 octets de long. 
+Les adresses doivent être écrites en ordre little-endian. 
+L'exploit est donc : 
+./level9 $(python -c 'print("\x90" * 70 + "\x31\xc0\x31\xdb\x31\xc9\x31\xd2\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x50\x89\xe2\x89\xe1\xb0\x0b\xcd\x80" + "\x0c\xa0\x04\x08") + "A" * 4 + "\x70\xa0\x04\x08"')
+
+À partir de là, on peut faire un cat /home/user/bonus0/.pass
