@@ -8,7 +8,7 @@ int language = 0;
 // Function to greet user based on language setting
 int greetuser(char* username)
 {
-    char greeting[100];  // Buffer to hold the greeting message
+    char greeting[34];  // Buffer to hold the greeting message (uncertainty in regards to the size)
 
     // Choose greeting based on the current language setting
     switch (language)
@@ -34,7 +34,9 @@ int greetuser(char* username)
 // Main function
 int main(int argc, const char **argv)
 {
+    char result[76];
     char combinedInput[76];  // Buffer to combine command line arguments
+    char *langEnv;
 
     // Check for correct number of arguments
     if (argc != 3)
@@ -46,7 +48,7 @@ int main(int argc, const char **argv)
     strncat(combinedInput, argv[2], 35);
 
     // Check environment variable LANG to set the language
-    char *langEnv = getenv("LANG");
+    langEnv = getenv("LANG");
     if (langEnv)
     {
         if (!memcmp(langEnv, "fi", 2))
@@ -56,5 +58,6 @@ int main(int argc, const char **argv)
     }
 
     // Greet the user with combined input as their name
-    return greetuser(combinedInput);
+    memcpy(result, dest, sizeof(result))
+    return greetuser(result);
 }

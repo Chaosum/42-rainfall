@@ -8,7 +8,7 @@ char* process_input(char* dest, char* prompt) {
 
     puts(prompt);  // Display the prompt
     read(0, buffer, 4096);  // Read up to 4096 bytes from standard input
-    buffer[strcspn(buffer, "\n")] = '\0';  // Replace newline with null terminator
+    *strchr(buf, '\n') = '\0';  // Replace newline with null terminator
     strncpy(dest, buffer, 20);  // Copy at most 20 characters to dest
 
     return dest;
@@ -20,8 +20,10 @@ char* concatenate_inputs(char* dest) {
     char secondInput[20];
 
     process_input(firstInput, " - ");
-    process_input(secondInput, "- ");
+    process_input(secondInput, " - ");
     strcpy(dest, firstInput);
+    dest[strlen(dest) + 1] = '\0'; // Add a space to the string and a null terminator after it
+    dest[strlen(dest)] = ' ';
     strcat(dest, secondInput);  // Concatenate second input to dest
 
     return dest;
