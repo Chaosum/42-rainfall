@@ -4,7 +4,7 @@ buffer overflow comme dans les exercices précédents. On constate par contre
 que la string fournie par l'utilisateur est donnée directement à fprintf. La 
 string est par ailleurs sur la stack. On peut donc donner un format au programme
 qui l'analysera en récupérant les données nécessaires sur la stack. 
-En décompilant le programme, on constate qu'il vérifie qu'une variable à
+En désassemblant le programme, on constate qu'il vérifie qu'une variable à
 l'adresse 0x804988c a bien la valeur 0x40, et que si c'est le cas, il execute
 un system("/bin/sh"). Il suffit donc de mettre cette variable à 0x40 avec un 
 format donné sur l'entrée standard. 
