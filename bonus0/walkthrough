@@ -1,3 +1,32 @@
+On met le programme dans un décompilateur. On voit deux string sont allouées 
+côte à côte dans la fonction pp. On voit qu'il y a un strcpy qui ne check pas 
+la taille. On peut donc faire un overflow sur la première chaîne. 
+La fonction p lit jusqu'à 4096 caractère dans un buffer, depuis stdin. Elle 
+cherche ensuite le premier caractère '\n' et le remplace par '\0'. Elle copie 
+ensuite avec strncpy les 20 premiers caractères dans la chaîne passée en 
+paramètre. 
+On constate que le buffer intermédiaire utilisé pour lire l'entrée standard 
+n'est pas remis à 0 entre chaque appel, et qu'il reste en mémoire. On profite 
+donc de cette mémoire après ces 20 premiers caractères pour introduire une 
+nop-slide et un shellcode. 
 
+Après les deux appels à la fonction p, un strcpy de la première chaîne de 
+caractère dans celle donnée en paramètre de pp est fait. Mais comme il n'y pas 
+de limite de taille dans la fonction strcpy, et qu'il n'y a pas de 0 dans la 
+première chaîne de caractère, la fonction copie les deux chaînes de caractères
+dans celle donnée en paramètre. Le programme ajoute un espace à la chaîne de 
+caractères. Il y a ensuite un strcat qui ajoute encore la deuxième chaîne de 
+caractères, qui cause un overflow, ce qui écrase l'addresse de reteur de main. 
+On choisit une addresse située dans la nop-slide, et on construit notre 
+payload :
+[20 caractères poubelles pour remplir la première chaîne, 
+une nop-slide, 
+le shellcode, 
+du padding pour compléter jusqu'à 4095 caractères (la taille du buffer -1), 
+un caractère '\n' (par ce que s'il n'y en a pas, ça plante), 
+du padding (offset), 
+l'adresse qui pointe dans la nop-slide,
+du padding pour compléter jusqu'à 19 caractères,
+un '\n']
 
 python -c 'print("a" * 20 + "\x90" * 200 + "\x31\xc0\x31\xdb\x31\xc9\x31\xd2\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x50\x89\xe2\x89\xe1\xb0\x0b\xcd\x80" + "a" * 3845 + "\n" + "b" * 14 + "\x10\xe7\xff\xbf" + "c" * 1 + "\n")' > test && cat test - | ./bonus0

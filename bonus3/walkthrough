@@ -1,1 +1,11 @@
+On met le programme dans un décompilateur, et on voit qu'il ouvre le fichier de
+mdp. Il met ensuite un '\0' à l'endroit de notre choix avec atoi(argv[1]). 
+Ensuite, il compare argv[1] et la chaîne de caractère lue. Si les deux sont 
+égaux, alors le programme fait execve(/bin/bash). Il faut donc que la chaîne de
+caractère soit égale à argv[1]. 
+On profite du fait que atoi("") rende 0 pour mettre le caractère '\0' au début
+de ptr. Au moment de la comparaison strcmp(ptr, argv[1]), on compare deux 
+chaînes vides, qui sont donc égales. 
+
+
 ./bonus3 ""
