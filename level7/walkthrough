@@ -8,8 +8,10 @@ On constate que les deux premiers arguments du programme sont passés à strcpy
 qui les met dans les char*. La faille vient du fait que strcpy ne vérifie pas 
 la taille de string passée en argument (ici argv[1] et argv[2]). Cela nous 
 permet de faire un heap overflow. 
-Le but est de remplacer le pointeur contenu par le deuxième malloc pour qu'il 
-pointe vers l'adresse de retour contenu dans la stack, afin de le modifier. 
+Tous les mallocs sont côte à côte dans la mémoire, ce qui nous permet de faire les
+overflows. 
+Le but est de remplacer le pointeur contenu par le deuxième tableau pour qu'il 
+pointe vers l'adresse de retour contenu dans la stack, afin de la modifier. 
 Le deuxième argument contient l'adresse de m, et sera écrit à l'adresse pointée 
 précédemment. 
 On construit donc l'exploit comme suit : 

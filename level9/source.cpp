@@ -9,21 +9,21 @@ class N {
 public:
 	int nb;
 	int (N::*func)(N &);
-	char annotation[100];
+	char annotation[100]; // uncertainty about the size of this buffer
 
 	N(int val) : nb(val)
 	{
 		this->func = &N::operator+;
 	}
-	virtual int operator+(N &right)
+	int operator+(N &right)
 	{
 		return this->nb + right.nb;
 	}
-	virtual int operator-(N &right)
+	int operator-(N &right)
 	{
 		return this->nb - right.nb;
 	}
-	virtual void setAnnotation(char *str)
+	void setAnnotation(char *str)
 	{
 		memcpy(this->annotation, str, strlen(str));
 	}

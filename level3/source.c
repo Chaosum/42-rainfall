@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+int m; // address of 0x0804988c
+
 int v()
 {
   int result;

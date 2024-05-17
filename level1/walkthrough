@@ -1,4 +1,4 @@
-On voit un fichier level1 dans le répertoir maison. On exécute le programme, et
+On voit un fichier level1 dans le répertoire maison. On exécute le programme, et
 il attend qu'on rentre du texte. Une fois le texte rentré, le programme s'arrête. 
 On décompile le programme, et on voit qu'il fait un gets sur une variable locale. 
 C'est un endroit idéal pour un buffer overflow. On décompile le programme, on

